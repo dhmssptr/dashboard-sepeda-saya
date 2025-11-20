@@ -14,8 +14,11 @@ sns.set(style='whitegrid')
 @st.cache_data
 def load_data():
     file_path = "day_cleaned.csv"
+    
+    # Cek apakah file ada
     if not os.path.exists(file_path):
-        st.error("File 'day_cleaned.csv' tidak ditemukan!")
+        # Jika di Streamlit Cloud, mungkin path-nya perlu absolut atau cek folder
+        st.error(f"File '{file_path}' tidak ditemukan! Pastikan file day_cleaned.csv sudah di-upload ke GitHub.")
         return None
     
     data = pd.read_csv(file_path)
@@ -28,13 +31,14 @@ df = load_data()
 if df is not None:
     
     # =========================================================================
-    # OBAT ANTI ERROR (FIX BUG)
-    # Kita buat kolom 'tipe_hari' secara otomatis di sini jika belum ada
+    # 🛠️ BAGIAN INI ADALAH PERBAIKAN BUG (FIX)
+    # Kita paksa buat kolom 'tipe_hari' jika tidak ditemukan di CSV
     # =========================================================================
     if 'tipe_hari' not in df.columns:
         df['tipe_hari'] = df['hari_kerja_efektif'].apply(
             lambda x: 'Hari Kerja' if x == 1 else 'Hari Libur/Akhir Pekan'
         )
+    # =========================================================================
 
     # --- Sidebar ---
     st.sidebar.image("https://raw.githubusercontent.com/dicodingacademy/assets/main/logo.png", width=150)
